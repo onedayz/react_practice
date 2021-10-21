@@ -1,119 +1,86 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import './App.css';
-import TOC from './components/TOC';
-import CreateContent from './components/CreateContent';
-import ReadContent from './components/ReadContent';
-import UpdateContent from './components/UpdateContent';
-import Subject from './components/Subject';
-import Control from './components/Control';
 
+function App() {
+    return (
+        <div className="container">
+            <h1>Hello World!</h1>
+            <FuncComp initNumber={2}/>
+            <ClassComp initNumber={2}/>
+        </div>
+    );
+}
 
-class App extends Component{
-    constructor(props) {
-        super(props);
-        this.max_content_id = 3;
-        this.state = {
-            mode:'read',
-            selected_content_id: 2,
-            welcome: {title: 'Welcome', desc:'Hello, React!!'},
-            subject:{
-                title:'WEB',
-                sub:'World Wide Web'
-            },
-            contents:[
-                {id:1, title: 'HTML',       desc:'HTML is for information'          },
-                {id:2, title: 'CSS',        desc:'CSS is for design'                },
-                {id:3, title: 'JavaScript', desc:'JavaScript is for interactive'    }
-            ]
-        }
+function FuncComp(props){
+    let numberState = useState(props.initNumber);
+    let number = numberState[0];
+    let setNumber = numberState[1];
+    // let [number, setNumber] = [...useState(props.initNumber)];
+
+    let [_date, setDate] = useState((new Date()).toString());
+
+    return (
+        <div className="container">
+            <h2>function style component</h2>
+            <p>Number : {number}</p>
+            <p>Date : {_date}</p>
+            <input type="button" value="random" onClick={
+                function (){
+                    setNumber(Math.random());
+                }
+            }/>
+            <input type="button" value="date" onClick={
+                function (){
+                    setDate((new Date()).toString());
+                }
+            }/>
+        </div>
+    )
+}
+
+let classStyle = 'color:red';
+class ClassComp extends React.Component{
+    state = {
+        number : this.props.initNumber,
+        date : (new Date()).toString()
     }
 
-    getReadContent(){
-        let i = 0;
-        while(i < this.state.contents.length){
-            let data = this.state.contents[i];
-            if(data.id === this.state.selected_content_id){
-                return data;
-            }
-            i++;
-        }
+    componentWillMount() {
+        // deprecated
+        console.log('%cclass => componentWillMount', classStyle);
     }
-    getContent(){
-        let _title, _desc, _article = null;
-        if(this.state.mode === 'welcome'){
-            _title = this.state.welcome.title;
-            _desc = this.state.welcome.desc;
-            _article = <ReadContent title={_title} desc={_desc}/>;
-        } else if(this.state.mode === 'read'){
-            let _content = this.getReadContent();
-            console.log('_content', _content);
-            _article = <ReadContent title={_content.title} desc={_content.desc}/>;
-        } else if(this.state.mode === 'create'){
-            _article =
-                <CreateContent onSubmit={function(_title, _desc){
-                    this.max_content_id++;
-                    let _contents = this.state.contents.concat(
-                        {id: this.max_content_id, title: _title, desc: _desc});
-                    this.setState({mode: 'read', selected_content_id: this.max_content_id, contents:_contents});
-                }.bind(this)
-                }/>;
-        } else if(this.state.mode === 'update'){
-            let _content = this.getReadContent();
-            _article =
-                <UpdateContent data={_content} onSubmit={function(_id, _title, _desc){
-                    let _contents = Array.from(this.state.contents);
-                    let i = 0;
-                    while(i < _contents.length){
-                        if(_contents[i].id === _id){
-                            _contents[i].id = _id;
-                            _contents[i].title = _title;
-                            _contents[i].desc = _desc;
-                            break;
-                        }
-                        i++;
-                    }
-                    this.setState({mode: 'read', contents:_contents});
-                }.bind(this)
-                }/>;
-        }
-
-        return _article;
+    componentDidMount() {
+        console.log('%cclass => componentDidMount', classStyle);
+    }
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        console.log('%cclass => shouldComponentUpdate', classStyle);
+        return true;
+    }
+    componentWillUpdate(nextProps, nextState, nextContext) {
+        // deprecated
+        console.log('%cclass => componentWillUpdate', classStyle);
+    }
+    componentDidUpdate(nextProps, nextState, nextContext) {
+        console.log('%cclass => componentDidUpdate', classStyle);
     }
 
     render(){
-        console.log('App render');
-
-
+        console.log('%cclass => render', classStyle);
         return (
-            <div className="App">
-                <Subject title={this.state.subject.title} sub={this.state.subject.sub}
-                         onChangePage={function(){this.setState({mode:'welcome'})}.bind(this)}
-                />
-                <TOC data={this.state.contents} onChangePage={function(id){
-                    this.setState({mode:'read', selected_content_id:Number(id)})
-                }.bind(this)}/>
-                <Control onChangeMode={function (_mode){
-                    if(_mode === 'delete'){
-                        if(window.confirm('really?')){
-                            let _content = Array.from(this.state.contents);
-                            let i = 0;
-                            while(i < _content.length){
-                                if(_content[i].id === this.state.selected_content_id){
-                                    _content.splice(i,1);
-                                }
-                                i++;
-                            }
-                            this.setState({
-                                mode:'welcome',
-                                contents: _content
-                            })
-                            alert('deleted!');
-                        }
-                    } else{
-                        this.setState({mode:_mode});
-                    }
-                }.bind(this)}/>
-                {this.getContent()}
+            <div className="container">
+                <h2>class style component</h2>
+                <p>Number : {this.state.number}</p>
+                <p>Date : {this.state.date}</p>
+                <input type="button" value="random" onClick={
+                    function (){
+                        this.setState({number:Math.random()});
+                    }.bind(this)
+                }/>
+                <input type="button" value="date" onClick={
+                    function (){
+                        this.setState({date:(new Date()).toString()});
+                    }.bind(this)
+                }/>
             </div>
         )
     }
