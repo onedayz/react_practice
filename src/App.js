@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 
 function App() {
@@ -11,6 +11,9 @@ function App() {
     );
 }
 
+let funcStyle="color:yellow";
+let funcId = 0;
+
 function FuncComp(props){
     let numberState = useState(props.initNumber);
     let number = numberState[0];
@@ -18,6 +21,37 @@ function FuncComp(props){
     // let [number, setNumber] = [...useState(props.initNumber)];
 
     let [_date, setDate] = useState((new Date()).toString());
+
+    useEffect(function(){
+        console.log('%cfunc => useEffect (componentDidMount)' + +(++funcId), funcStyle);
+        // document.title = number + ' : ' + _date;
+        document.title = number;
+
+        return function(){
+            console.log('%cfunc => useEffect number return (componentWillUnmount)' + +(++funcId), funcStyle);
+        }
+    }, []);
+
+    useEffect(function(){
+        console.log('%cfunc => useEffect number (componentDidMount & componentDidUpdate)' + +(++funcId), funcStyle);
+        // document.title = number + ' : ' + _date;
+        document.title = number;
+
+        return function(){
+            console.log('%cfunc => useEffect number return (componentDidMount & componentDidUpdate)' + +(++funcId), funcStyle);
+        }
+    }, [number]);
+
+    useEffect(function(){
+        console.log('%cfunc => useEffect _date (componentDidMount & componentDidUpdate)' + +(++funcId), funcStyle);
+        // document.title = number + ' : ' + _date;
+        document.title = _date;
+
+        return function(){
+            console.log('%cfunc => useEffect _date return (componentDidMount & componentDidUpdate)' + +(++funcId), funcStyle);
+        }
+    }, [_date]);
+    console.log('%cfunc => render ' + +(++funcId), funcStyle);
 
     return (
         <div className="container">
